@@ -76,7 +76,7 @@ class CBRFParser:
     def make_request(url: str, *args) -> BS:
         # make url
         comb_url = url if not args else url.format(*args) 
-        print(f"Do request to {comb_url=}")
+        # print(f"Do request to {comb_url=}")
 
         try:
             resp = requests.get(comb_url)
@@ -111,3 +111,25 @@ class CBRFParser:
         else:
              raise CBRFParserError("Парсер не инициализирован актуальными данными. Выполните вызов метода init_parser().")
    
+    def get_currencies_list(self) -> Iterable:
+        if not self.initialized:
+            raise CBRFParserError("Парсер не инициализирован актуальными данными. Выполните вызов метода init_parser().")
+        
+        for k in self.currencies.keys():
+            yield k
+    
+    def get_currency_id_by_name(self, currency_name: str) -> str:
+        if not self.initialized:
+            raise CBRFParserError("Парсер не инициализирован актуальными данными. Выполните вызов метода init_parser().")
+        
+        if self.currencies.get(currency_name):
+            return self.currencies.get(currency_name)
+        else:
+            raise CBRFParserError(f"Нет информации о запрашиваемой валюте '{currency_name}'")
+    
+    def make_scrapping(self, currency_name: str) -> Iterable:
+        """
+        Непосредственно выполняет скраппинг данных для запрашиваемой валюты по ее имени
+        """
+        bs = self._make_request_for_currency_data(currency_name)
+        return self.parseDataTableBlock(bs)

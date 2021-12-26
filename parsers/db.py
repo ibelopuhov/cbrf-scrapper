@@ -52,7 +52,7 @@ class SQLiteStorageManager(CBRFDBStoregeManager):
     def _get_conn(self) -> Connection:
         try:
             conn = sqlite3.connect(self.dbconf.dbname)
-            print(f"База данных {self.dbconf.dbname} подключена к SQLite")
+            # print(f"База данных {self.dbconf.dbname} подключена к SQLite")
             
             try:
                 yield conn
@@ -60,7 +60,7 @@ class SQLiteStorageManager(CBRFDBStoregeManager):
             finally:
                 if (conn):
                     conn.close()
-                    print(f"Соединение с БД {self.dbconf.dbname} закрыто")
+                    # print(f"Соединение с БД {self.dbconf.dbname} закрыто")
         except sqlite3.Error as error:
             print(f"Ошибка БД {self.dbconf.dbname}", error)
             raise error   
