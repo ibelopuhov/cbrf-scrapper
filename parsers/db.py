@@ -89,5 +89,50 @@ class SQLiteStorageManager(CBRFDBStoregeManager):
         
         self.initialized = True
 
+    def update_currencies(self, cur_dict: dict) -> None:
+        ins_q = '''
+            insert into currencies (currency_name, currency_id)
+            values (?, ?);
+        '''
+        with self._get_conn() as conn:
+            conn.execute("delete from currencies;")
+            conn.executemany(ins_q, [(k, v) for k, v in cur_dict.items()])
 
+    def fill_currency_timeline(self, timeline_coll: Iterable, currency_id: str) -> None:
+        del_q = '''
+            delete from currencies_timeline where currency_id=?;
+        '''
+        
+        ins_q = '''
+            insert into currencies_timeline (currency_id, date_, unit, curs)
+            values (?, ?, ?, ?);
+        '''
+        with self._get_conn() as conn:
+            conn.execute(del_q, (currency_id, ))
+            conn.executemany(ins_q, [(currency_id, tp[0], tp[1], tp[2]) for tp in timeline_coll])
 
+    def get_currency_timeline_by_name(self, currency_name: str) -> Iterable:
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            currency_id = None
+            cur_id_row = cursor.execute("select currency_id from currencies where currency_name=?;", (currency_name, )).fetchone()
+            if cur_id_row:
+                currency_id = cur_id_row[0]
+            else:
+                # Если валюты не найдено среди таблицы валют - сразу возвращаем пустой список 
+                # (пока стратегия такая, возможно ошибку кидать)
+                cursor.close()
+                return []
+
+            cursor.close()
+
+            if currency_id:
+                cursor = conn.cursor()
+                for row in cursor.execute("select * from currencies_timeline where currency_id=?", (currency_id, )):
+                    yield row
+                cursor.close()
+            else:
+                return []
+
+    def __str__(self) -> str:
+        return "SQLite storage manager"
