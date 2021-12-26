@@ -4,8 +4,9 @@ from bs4 import BeautifulSoup as BS
 from pathlib import Path
 
 current_path = Path(os.path.dirname(__file__))
-print(f"{current_path=}")
-print(f'{current_path.joinpath("cbr.ru.base.html")=}')
+
+# print(f"{current_path=}")
+# print(f'{current_path.joinpath("cbr.ru.base.html")=}')
 
 def make_base_request_mock() -> BS:
     with open(current_path.joinpath("cbr.ru.base.html"), "r", encoding="utf-8") as r:
