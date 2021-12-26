@@ -1,0 +1,5 @@
+### Получение базовой страницы для анализа
+GET https://cbr.ru/currency_base/dynamics/
+
+### Запрос на получение страницы с конкретной валютой (выбрал любую где не сильно много данных наблюдений R01660 'Суданский фунт') 
+GET https://cbr.ru/currency_base/dynamics/?UniDbQuery.Posted=True&UniDbQuery.so=1&UniDbQuery.mode=1&UniDbQuery.date_req1=&UniDbQuery.date_req2=&UniDbQuery.VAL_NM_RQ=R01660&UniDbQuery.From=01.12.1992&UniDbQuery.To=25.12.2021
